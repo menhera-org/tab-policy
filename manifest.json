@@ -4,14 +4,26 @@
 	"version": "1.0",
 	"description": "Manages tabs based on a policy.",
 	"permissions": [
+		"tabs",
 		"tabHide"
 	],
 	"background": {
 		"page": "background.html"
 	},
-	"page_action": {
+	"browser_action": {
 		"browser_style": true,
-		"default_icon": "img/push_pin-black-18dp.svg",
-`		"default_title": "Hide tab"
+		"default_icon": {
+			"16": "img/tab-black-18dp.svg"
+		},
+		"default_title": "Tabs",
+		"default_popup": "popup/popup.html",
+		"default_area": "tabstrip",
+		"theme_icons": [
+			{
+				"size": 16,
+				"light": "img/tab-white-18dp.svg",
+				"dark": "img/tab-black-18dp.svg"
+			}
+		]
 	}
 }

@@ -1,0 +1,17 @@
+{
+	"manifest_version": 2,
+	"name": "Tab Policy",
+	"version": "1.0",
+	"description": "Manages tabs based on a policy.",
+	"permissions": [
+		"tabHide"
+	],
+	"background": {
+		"page": "background.html"
+	},
+	"page_action": {
+		"browser_style": true,
+		"default_icon": "img/push_pin-black-18dp.svg",
+`		"default_title": "Hide tab"
+	}
+}

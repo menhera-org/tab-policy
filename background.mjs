@@ -1,3 +1,4 @@
+// vim: ts=4 noet ai
 
 import {SetMap} from '/lib/SetMap.mjs';
 
@@ -6,6 +7,15 @@ const windowByTab = new Map;
 
 const activeTabByWindow = new Map;
 const tabInfo = new Map;
+
+const registrableDomains = new Set;
+
+browser.runtime.onMessage.addListener((message) => {
+	if (message.command == 'registrable_domain') {
+		console.log('registrable domain:', message.domain);
+		registrableDomains.add(message.domain);
+	}
+})
 
 const getActiveUrl = (windowId) => {
 	if (!activeTabByWindow.has(windowId)) {

@@ -1,3 +1,5 @@
+// vim: ts=4 noet ai
+
 import {OriginStore} from '/lib/OriginStore.mjs';
 
 (async () => {
@@ -8,6 +10,14 @@ import {OriginStore} from '/lib/OriginStore.mjs';
 	for (const tab of tabs) {
 		origins.add(tab.url, tab);
 	}
+
+	{
+		const li = document.createElement('li');
+		li.append('Show all tabs');
+		domainsElement.append(li);
+		domainsElement.append(document.createElement('hr'));
+	}
+
 	for (const origin of origins) {
 		const li = document.createElement('li');
 		if ('null' === origin) {

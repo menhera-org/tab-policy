@@ -1,2 +1,2 @@
 all:
-	git archive --fmt=zip -o output.xpi HEAD:src/
+	git archive --format=zip -o output.xpi HEAD:src/

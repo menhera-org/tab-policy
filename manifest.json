@@ -34,5 +34,9 @@
 				"dark": "img/tab-black-18dp.svg"
 			}
 		]
+	},
+	"icons": {
+		"48": "icon.svg",
+		"96": "icon.svg"
 	}
 }

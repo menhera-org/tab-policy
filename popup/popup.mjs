@@ -4,7 +4,10 @@ import {OriginStore} from '/lib/OriginStore.mjs';
 
 (async () => {
 	//
+	const tabManager = (await browser.runtime.getBackgroundPage()).tabManager;
 	const domainsElement = document.querySelector('#domains') || document.body;
+	const currentWindow = await browser.window.getCurrent();
+	const windowId = currentWindow.id;
 	const tabs = await browser.tabs.query({windowId: browser.windows.WINDOW_ID_CURRENT});
 	const origins = new OriginStore;
 	for (const tab of tabs) {

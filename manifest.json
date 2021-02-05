@@ -1,7 +1,9 @@
 {
 	"manifest_version": 2,
-	"name": "Tab Policy",
+	"name": "Site-based Tabs",
 	"version": "1.0",
+	"author": "Menhera.org",
+	"homepage_url": "https://github.com/menhera-org/tab-policy",
 	"description": "Manages tabs by domain.",
 	"permissions": [
 		"tabs",

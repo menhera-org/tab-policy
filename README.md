@@ -1,2 +1,5 @@
-# tab-policy
-Firefox add-on to manage tabs based on a policy.
+# Site-based Tabs
+Firefox add-on to manage tabs by domain.
+
+## License
+GNU GPL version 3 or later.

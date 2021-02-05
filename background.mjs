@@ -18,6 +18,19 @@ browser.runtime.onMessage.addListener((message) => {
 	}
 });
 
+globalThis.getRegistrableDomain = (aDomain) =>
+{
+	if (!aDomain) return null;
+	const domain = String(domain);
+	const parts = domain.split('.');
+	if (parts.length < 2) return domain;
+	for (let i = 2; i <= parts.length; i++) {
+		const domain = parts.slice(- i).join('.');
+		if (registrableDomains.has(domain)) return domain;
+	}
+	return domain;
+};
+
 const getActiveUrl = (windowId) => {
 	if (!activeTabByWindow.has(windowId)) {
 		return 'about:blank';
@@ -29,7 +42,8 @@ const getActiveUrl = (windowId) => {
 	return tabInfo.get(activeTabId).url;
 };
 
-const addTab = (tab) => {
+const addTab = (tab) =>
+{
 	const url = tab.url || 'about:blank';
 	const origin = new URL(url).origin;
 	const domain = origin == 'null' ? null : new URL(origin).hostname;
@@ -38,59 +52,92 @@ const addTab = (tab) => {
 		origin,
 		domain,
 		url,
-	})
+	});
+	return tabInfo.get(tab.id);
 };
 
-let lastActiveOrigin = 'null';
+globalThis.getDomain = (aUrl) =>
+{
+	const url = aUrl || 'about:blank';
+	const origin = new URL(url).origin;
+	return origin == 'null' ? null : new URL(origin).hostname;
+};
+
+globalThis.updateTabData = async () =>
+{
+	//
+	const tabs = await browser.tabs.query({});
+	for (const tab of tabs) {
+		const domain = getDomain(tab.url);
+		if (tab.active) {
+			if (domain) {
+				activeDomainByWindow.set(tab.windowId, domain);
+			}
+		}
+	}
+};
+
+globalThis.getActiveDomainByWindow = (windowId) =>
+{
+	return !activeDomainByWindow.has(windowId)
+		? null
+		: getRegistrableDomain(activeDomainByWindow.get(windowId));
+};
 
 
 window.tabController = {
 	//
-	async updateTabInformation()
+	async updateTabData()
 	{
 		//
 		const tabs = await browser.tabs.query({});
 		for (const tab of tabs) {
+			const {domain} = addTab(tab);
 			if (tab.active) {
-				activeTabByWindow.set(tab.windowId, tab.id);
+				if (domain) {
+					activeDomainByWindow.set(tab.windowId, domain);
+				}
+				tabInfoactiveTabByWindow.set(tab.windowId, tab.id);
 			}
 			tabsByWindow.set(tab.windowId, tab.id);
 			windowByTab.set(tab.id, tab.windowId);
-			const origin = new URL(tab.url || 'about:blank').origin;
-			tabInfo.set(tab.id, {
-				id: tab.id,
-				origin,
-				url: tab.url || 'about:blank',
-			});
 		}
 	},
-	getLastActiveOriginByWindow(windowId)
+	getActiveDomainByWindow(windowId)
+	{
+		return !activeDomainByWindow.has(windowId)
+			? null
+			: getRegistrableDomain(activeDomainByWindow.get(windowId));
+	},
+	setActiveDomainByWindow(windowId, origin)
 	{
 		//
 	},
-	getShownOriginByWindow(windowId)
+	async getDomainsByWindow(windowId)
 	{
-		//
-	},
-	setShownOriginByWindow(windowId, origin)
-	{
-		//
-	},
-	getOriginsByWindow(windowId)
-	{
-		//
+		const tabs = await browser.tabs.query({windowId});
+		for (const tab of tabs) {
+
+		}
 	},
 	async updateShownTabOnWindow(windowId)
 	{
 		//
 		const activeUrl = getActiveUrl(windowId);
 		const activeOrigin = new URL(activeUrl).origin;
+		const activeDomain = tabController.getActiveDomainByWindow(windowId);
 		const tabs = await browser.tabs.query({windowId});
 		const promises = [];
 		for (const tab of tabs) {
 			if (tab.pinned) continue;
 			const url = new URL(tab.url);
 			const origin = url.origin;
+			if ('null' === origin) {
+				promises.push(browser.tabs.show(tab.id));
+				continue;
+			}
+			const domain = new URL(origin).hostname;
+			const registrableDomain = getRegistrableDomain(domain);
 			if (origin !== activeOrigin) {
 				promises.push(browser.tabs.hide(tab.id));
 			} else {
@@ -144,14 +191,12 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, updatedTab) => {
 				if ('null' === origin) {
 					console.log('null origin:', url);
 				}
-				if (url !== 'about:blank') {
-					tabInfo.set(tabId, {
-						id: tabId,
-						origin,
-						url,
-					});
-				}
+				//if (url !== 'about:blank')
+				const {domain} = addTab(updatedTab);
 				if (updatedTab.active) {
+					if (domain) {
+						activeDomainByWindow.set(updatedTab.windowId, domain);
+					}
 					await tabController.updateShownTabOnWindow(updatedTab.windowId);
 				}
 			}
@@ -162,7 +207,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, updatedTab) => {
 	}
 });
 
-tabController.updateTabInformation();
+tabController.updateTabData();
 
 browser.tabs.onActivated.addListener(async ({previousTabId, tabId, windowId}) => {
 	const activeTab = await browser.tabs.get(tabId);

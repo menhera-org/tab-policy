@@ -22,13 +22,15 @@
 	}
 	toggleShowAllElement.addEventListener('click', ev => {
 		if (getNoHideModeByWindow(windowId)) {
-			toggleShowAllElement.classList.remove('checked');
-			setNoHideModeByWindow(windowId, false).catch(e => {
+			setNoHideModeByWindow(windowId, false).then(() => {
+				window.close();
+			}).catch(e => {
 				console.error(e);
 			});
 		} else {
-			toggleShowAllElement.classList.add('checked');
-			setNoHideModeByWindow(windowId, true).catch(e => {
+			setNoHideModeByWindow(windowId, true).then(() => {
+				window.close();
+			}).catch(e => {
 				console.error(e);
 			});
 		}
@@ -53,7 +55,9 @@
 			li.classList.add('checked');
 		}
 		li.addEventListener('click', ev => {
-			setActiveDomainByWindow(windowId, domain).catch(e => {
+			setActiveDomainByWindow(windowId, domain).then(() => {
+				window.close();
+			}).catch(e => {
 				console.error(e);
 			});
 		});

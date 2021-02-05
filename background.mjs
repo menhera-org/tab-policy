@@ -10,7 +10,7 @@ const disabledWindows = new Set;
 globalThis.getRegistrableDomain = (aDomain) =>
 {
 	if (!aDomain) return null;
-	const domain = String(domain);
+	const domain = String(aDomain);
 	const parts = domain.split('.');
 	if (parts.length < 2) return domain;
 	for (let i = 2; i <= parts.length; i++) {

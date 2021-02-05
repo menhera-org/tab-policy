@@ -11,7 +11,7 @@
 	} = (await browser.runtime.getBackgroundPage());
 
 	const menuListElement = document.querySelector('#menuList');
-	const currentWindow = await browser.window.getCurrent();
+	const currentWindow = await browser.windows.getCurrent();
 	const windowId = currentWindow.id;
 	
 	const toggleShowAllElement = document.createElement('li');

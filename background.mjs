@@ -50,7 +50,7 @@ globalThis.setNoHideModeByWindow = async (windowId, noHide) =>
 globalThis.setActiveDomainByWindow = async (windowId, domain) =>
 {
 	activeDomainByWindow.set(windowId, domain);
-	await updateShownTabByWindow(windowId);
+	await updateShownTabByWindow(windowId, true);
 };
 
 globalThis.getDomainsByWindow = async (windowId) =>
@@ -66,13 +66,13 @@ globalThis.getDomainsByWindow = async (windowId) =>
 	return [... domains].sort();
 };
 
-globalThis.updateShownTabByWindow = async (windowId) =>
+globalThis.updateShownTabByWindow = async (windowId, jumpEnabled) =>
 {
 	const noHide = getNoHideModeByWindow(windowId);
 	const activeDomain = getActiveDomainByWindow(windowId);
 	const tabs = await browser.tabs.query({windowId});
 	const promises = [];
-	const activeTabs = [];
+	const activeTabIndices = [];
 	for (const tab of tabs) {
 		if (tab.pinned) continue;
 		if (!activeDomain) {
@@ -94,13 +94,17 @@ globalThis.updateShownTabByWindow = async (windowId) =>
 		} else {
 			promises.push(browser.tabs.show(tab.id));
 			if (noHide) {
-				activeTabs.push(tab.id);
+				activeTabIndices.push(tab.index);
 			}
 		}
 	}
 
-	if (noHide && activeTabs.length) {
-		promises.push(browser.tabs.highlight(activeTabs[activeTabs.length - 1]));
+	if (jumpEnabled && noHide && activeTabIndices.length) {
+		promises.push(browser.tabs.highlight({
+			windowId,
+			tabs: [activeTabIndices[activeTabIndices.length - 1]],
+			populate: false,
+		}));
 	}
 	await Promise.all(promises);
 };
@@ -156,8 +160,11 @@ browser.tabs.onActivated.addListener(async ({previousTabId, tabId, windowId}) =>
 	const activeTab = await browser.tabs.get(tabId);
 	if (activeTab.discarded || activeTab.url === 'about:blank') return;
 	const domain = getDomain(activeTab.url);
-	activeDomainByWindow.set(windowId, domain);
-	console.log('Tab activated on window:', windowId, domain);
+	if (domain) {
+		activeDomainByWindow.set(windowId, domain);
+		console.log('Tab activated on window:', windowId, domain);
+	}
+	
 	await updateShownTabByWindow(windowId);
 });
 

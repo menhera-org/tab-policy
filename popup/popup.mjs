@@ -49,7 +49,7 @@
 		const li = document.createElement('li');
 		menuListElement.append(li);
 		li.append(domain);
-		if (activeDomain === domain) {
+		if (!getNoHideModeByWindow(windowId) && activeDomain === domain) {
 			li.classList.add('checked');
 		}
 		li.addEventListener('click', ev => {

@@ -1,3 +1,10 @@
+
+:root {
+	width: 20rem;
+	margin: 0;
+	padding: 0;
+}
+
 body {
 	font-family: system-ui, sans-serif;
 	color: #222;
@@ -30,6 +37,7 @@ a {
 	background-size: 1.5em;
 	background-position: .5em center;
 	background-image: none;
+	min-inline-size: max-content;
 }
 
 #menuList > li:hover, #domains > li:active {

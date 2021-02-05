@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Tab Policy",
 	"version": "1.0",
-	"description": "Manages tabs based on a policy.",
+	"description": "Manages tabs by domain.",
 	"permissions": [
 		"tabs",
 		"tabHide",

@@ -159,7 +159,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, updatedTab) => {
 
 browser.tabs.onActivated.addListener(async ({previousTabId, tabId, windowId}) => {
 	const activeTab = await browser.tabs.get(tabId);
-	if (activeTab.discarded || activeTab.url === 'about:blank') return;
+	if (activeTab.discarded || activeTab.pinned || activeTab.url === 'about:blank') return;
 	const domain = getDomain(activeTab.url);
 	if (domain) {
 		activeDomainByWindow.set(windowId, domain);

@@ -53,11 +53,12 @@ globalThis.setActiveDomainByWindow = async (windowId, domain) =>
 	await updateShownTabByWindow(windowId, true);
 };
 
-globalThis.getDomainsByWindow = async (windowId) =>
+globalThis.getDomainsByWindow = async (windowId, includePinned) =>
 {
 	const tabs = await browser.tabs.query({windowId});
 	const domains = new Set;
 	for (const tab of tabs) {
+		if (!includePinned && tab.pinned) continue;
 		const domain = getRegistrableDomain(getDomain(tab.url));
 		if (domain) {
 			domains.add(domain);

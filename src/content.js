@@ -4,7 +4,7 @@ const getCookieKeys = () => document.cookie.split('; ').map(cookie => cookie.spl
 /**
  * 
  * @param {number} aByteLength 
- * @returns {string[]}
+ * @returns {string}
  */
 const getRandomHex = (aByteLength) => {
     const byteLength = aByteLength & (-1 >>> 1);
